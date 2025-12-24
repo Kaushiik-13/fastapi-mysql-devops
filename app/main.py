@@ -25,3 +25,7 @@ def read_users(db: Session = Depends(get_db)):
 @app.get("/")
 def health():
     return {"status": "running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
