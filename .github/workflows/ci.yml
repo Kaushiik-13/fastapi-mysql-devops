@@ -16,17 +16,12 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: |
-          docker build -t fastapi-ci .
-
       - name: Run containers
-        run: |
-          docker compose up -d
+        run: docker compose up -d --build
 
       - name: Wait for API to be healthy
         run: |
-          for i in {1..10}; do
+          for i in {1..12}; do
             if curl -f http://localhost:8000/health; then
               echo "API is healthy"
               exit 0
@@ -39,4 +34,6 @@ jobs:
 
       - name: Show container status (debug)
         if: failure()
-        run: docker ps && docker logs fastapi-api
+        run: |
+          docker ps -a
+          docker compose logs
