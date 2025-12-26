@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-test-push:
+  build-test-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,8 +59,21 @@ jobs:
         run: pytest
 
       - name: Push Docker image
-        if: success()
         run: |
           docker tag fastapi-mysql-devops-api:latest \
             ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-mysql-devops:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-mysql-devops:latest
+
+      - name: Deploy to EC2
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/app
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
