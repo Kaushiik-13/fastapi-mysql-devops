@@ -27,5 +27,5 @@ def health():
     return {"status": "running"}
 
 @app.get("/health")
-def health():
-    return {"status": "deployed-v2"}
+def health_check():
+    return {"status": "healthy"}
