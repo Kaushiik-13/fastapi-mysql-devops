@@ -5,7 +5,7 @@ from . import models, schemas, crud
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="FastAPI MySQL DevOps App")
+app = FastAPI(title="FastAPI MySQL DevOps Application")
 
 def get_db():
     db = SessionLocal()
